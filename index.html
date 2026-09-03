@@ -1,4 +1,4 @@
-<title>연금 인출 계산기</title>
+<title>가족 연금 인출 계산기</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
   :root{
@@ -57,7 +57,7 @@
   .app{max-width:1180px;margin:0 auto;padding:36px 24px 64px;}
 
   .header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:26px;}
-  header{max-width:720px;}
+  header{max-width:760px;}
   .eyebrow{font:600 11.5px/1 'IBM Plex Sans KR';letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
   h1{font-family:'Gowun Batang',serif;font-size:clamp(26px,3.6vw,36px);line-height:1.25;margin:0 0 12px;color:var(--ink);text-wrap:balance;}
   .subtitle{color:var(--ink-secondary);line-height:1.65;font-size:14.5px;margin:0;}
@@ -74,11 +74,14 @@
   .export-status{position:fixed;right:20px;bottom:20px;background:var(--ink);color:var(--bg);font:500 12.5px 'IBM Plex Sans KR';padding:10px 16px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50;}
   .export-status.show{opacity:1;}
 
-  main.layout{display:grid;grid-template-columns:336px 1fr;gap:22px;align-items:start;}
+  main.layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start;}
   @media (max-width:900px){ main.layout{grid-template-columns:1fr;} aside.inputs{position:static;} }
 
   aside.inputs{position:sticky;top:22px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 22px 24px;display:flex;flex-direction:column;gap:22px;box-shadow:var(--shadow);}
+  .aside-head{display:flex;justify-content:space-between;align-items:center;gap:10px;}
   aside.inputs h2{font-family:'Gowun Batang',serif;font-size:17px;margin:0;color:var(--ink);}
+  .reset-btn{font:500 12px 'IBM Plex Sans KR';color:var(--ink-secondary);background:none;border:1px solid var(--border);border-radius:999px;padding:5px 12px;cursor:pointer;white-space:nowrap;}
+  .reset-btn:hover{border-color:var(--accent);color:var(--accent);}
   fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:16px;}
   fieldset + fieldset{padding-top:18px;border-top:1px solid var(--border);}
   legend{font:600 12.5px/1 'IBM Plex Sans KR';letter-spacing:.02em;color:var(--ink-secondary);text-transform:uppercase;padding:0 0 2px;width:100%;}
@@ -99,6 +102,11 @@
   .checkbox-row input{margin-top:3px;accent-color:var(--accent);}
   .checkbox-row .opt-desc{display:block;color:var(--ink-secondary);font-size:12px;margin-top:2px;line-height:1.4;}
 
+  .combined-pension-fields{display:flex;flex-direction:column;gap:14px;padding:14px;background:var(--surface-2);border-radius:10px;}
+
+  select{font-family:'IBM Plex Sans KR';background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 8px;color:var(--ink);font-size:12.5px;}
+  select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+
   section.results{display:flex;flex-direction:column;gap:18px;min-width:0;}
   .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
   .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 19px;display:flex;flex-direction:column;gap:7px;box-shadow:var(--shadow);}
@@ -109,15 +117,65 @@
 
   .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px 22px;box-shadow:var(--shadow);min-width:0;}
   .card h2{font-family:'Gowun Batang',serif;font-size:17.5px;margin:0 0 4px;color:var(--ink);}
-  .card .desc{font-size:12.5px;color:var(--ink-secondary);margin:0 0 14px;line-height:1.55;max-width:640px;}
+  .card .desc{font-size:12.5px;color:var(--ink-secondary);margin:0 0 14px;line-height:1.55;max-width:760px;}
 
-  .legend-row{display:flex;gap:18px;font-size:12px;color:var(--ink-secondary);margin-bottom:10px;flex-wrap:wrap;}
+  .warning-banner{display:flex;gap:9px;align-items:flex-start;background:rgba(166,106,30,.1);border:1px solid var(--warning);border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--ink);line-height:1.55;margin-bottom:14px;}
+  .warning-banner .wb-icon{flex-shrink:0;}
+
+  .family-member{border:1px solid var(--border);border-radius:12px;padding:16px 18px 18px;margin-bottom:16px;background:var(--surface-2);}
+  .family-member-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .family-member-head input[type=text]{flex:1;min-width:120px;font:600 14px 'IBM Plex Sans KR';background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--ink);}
+  .age-field{display:flex;align-items:center;gap:5px;}
+  .age-field input[type=number]{width:60px;font-family:'IBM Plex Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 8px;color:var(--ink);font-size:13px;text-align:right;}
+  .age-field .unit{font-size:12px;color:var(--ink-secondary);}
+  .remove-btn{font-size:12px;color:var(--critical);background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;white-space:nowrap;}
+  .remove-btn:hover{border-color:var(--critical);}
+  .has-account-row{margin-bottom:12px;}
+
+  .member-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-bottom:12px;padding-bottom:14px;border-bottom:1px dashed var(--border);}
+  .member-fields .mf{display:flex;flex-direction:column;gap:4px;}
+  .member-fields .mf label{font-size:11px;color:var(--ink-secondary);}
+  .member-fields .mf input,.member-fields .mf select{font-family:'IBM Plex Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 8px;color:var(--ink);font-size:12.5px;width:100%;}
+  .member-fields .mf select{font-family:'IBM Plex Sans KR';}
+
+  .member-summary-line{font-size:12px;color:var(--ink-secondary);font-family:'IBM Plex Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:14px;}
+  .member-summary-line strong{color:var(--ink);font-weight:600;}
+  .expense-only-note{font-size:12px;color:var(--ink-secondary);background:var(--surface);border:1px dashed var(--border);border-radius:8px;padding:9px 11px;margin-bottom:14px;}
+
+  .expenses-label{font:600 12px 'IBM Plex Sans KR';color:var(--ink-secondary);text-transform:uppercase;letter-spacing:.02em;margin-bottom:8px;}
+  .expense-item{border:1px solid var(--border);border-radius:10px;padding:12px 14px 14px;margin-bottom:10px;background:var(--surface);}
+  .expense-item:last-of-type{margin-bottom:0;}
+  .expense-head-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:9px;flex-wrap:wrap;}
+  .expense-head-row .ef{display:flex;flex-direction:column;gap:4px;}
+  .expense-head-row .ef.label-f{flex:1.6;min-width:140px;}
+  .expense-head-row .ef.cat-f{flex:0 0 118px;}
+  .expense-head-row label{font-size:11px;color:var(--ink-secondary);}
+  .expense-head-row input,.expense-head-row select{font-family:'IBM Plex Sans KR';background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 8px;color:var(--ink);font-size:12.5px;width:100%;}
+  .expense-timing-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:8px;}
+  @media (max-width:780px){ .expense-timing-grid{grid-template-columns:1fr 1fr 1fr;} }
+  .expense-timing-grid .ef{display:flex;flex-direction:column;gap:4px;}
+  .expense-timing-grid label{font-size:11px;color:var(--ink-secondary);}
+  .expense-timing-grid input,.expense-timing-grid select{font-family:'IBM Plex Mono',monospace;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:6px 7px;color:var(--ink);font-size:12.5px;width:100%;}
+  .expense-timing-grid select{font-family:'IBM Plex Sans KR';}
+  .expense-timing-grid input:disabled{opacity:.4;}
+  .expense-preview{font-size:11.5px;color:var(--ink-secondary);font-family:'IBM Plex Mono',monospace;}
+  .expense-item-foot{display:flex;justify-content:flex-end;margin-top:6px;}
+
+  .add-expense-btn{font:500 12px 'IBM Plex Sans KR';color:var(--accent);background:none;border:1px dashed var(--accent);border-radius:8px;padding:6px 12px;cursor:pointer;margin-top:4px;}
+  .add-expense-btn:disabled{opacity:.4;cursor:not-allowed;border-style:solid;color:var(--ink-secondary);}
+  .add-family-btn{font:500 13px 'IBM Plex Sans KR';color:var(--accent);background:none;border:1px solid var(--accent);border-radius:999px;padding:8px 16px;cursor:pointer;}
+  .add-family-btn:hover{background:var(--accent);color:var(--surface);}
+  .add-family-btn:disabled{opacity:.4;cursor:not-allowed;background:none;color:var(--ink-secondary);border-color:var(--border);}
+
+  .legend-row{display:flex;gap:18px;font-size:12px;color:var(--ink-secondary);margin-bottom:6px;flex-wrap:wrap;}
   .legend-chip{display:inline-flex;align-items:center;gap:6px;}
   .legend-swatch{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .legend-line{width:14px;height:0;border-top:2px dashed;display:inline-block;}
+  .retire-list{font-size:12px;color:var(--ink-secondary);margin:0 0 12px;font-family:'IBM Plex Mono',monospace;}
 
   .chart-wrap{position:relative;}
   .chart-wrap svg{width:100%;height:auto;display:block;overflow:visible;}
-  .chart-tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font:500 11.5px/1.4 'IBM Plex Mono',monospace;padding:7px 10px;border-radius:8px;transform:translate(-50%,-112%);white-space:nowrap;opacity:0;transition:opacity .08s;z-index:5;}
+  .chart-tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font:500 11.5px/1.4 'IBM Plex Mono',monospace;padding:7px 10px;border-radius:8px;transform:translate(-50%,-112%);white-space:nowrap;opacity:0;transition:opacity .08s;z-index:5;max-width:280px;white-space:normal;}
   .chart-tooltip .tt-title{font-family:'IBM Plex Sans KR';font-weight:600;font-size:11px;margin-bottom:2px;opacity:.85;}
 
   .table-scroll{overflow-x:auto;}
@@ -128,6 +186,18 @@
   tbody tr:last-child td{border-bottom:0;}
   tr.total td{color:var(--ink);font-weight:600;}
   tr.base td{background:var(--accent-soft);}
+  td.wrap-cell{white-space:normal;text-align:left;font-family:'IBM Plex Sans KR';font-size:12px;color:var(--ink-secondary);}
+
+  .badge{display:inline-flex;align-items:center;gap:4px;font:600 11px 'IBM Plex Sans KR';padding:3px 9px;border-radius:999px;white-space:nowrap;}
+  .badge-good{background:rgba(46,125,70,.14);color:var(--good);}
+  .badge-warning{background:rgba(166,106,30,.14);color:var(--warning);}
+  .badge-critical{background:rgba(178,59,59,.14);color:var(--critical);}
+  .badge-neutral{background:var(--surface-2);color:var(--ink-secondary);}
+
+  .eval-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;}
+  .eval-tile{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:5px;}
+  .eval-tile .label{font-size:11.5px;color:var(--ink-secondary);}
+  .eval-tile .value{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;color:var(--ink);}
 
   .toggle-btn{align-self:flex-start;font:500 12.5px 'IBM Plex Sans KR';color:var(--accent);background:none;border:1px solid var(--accent);border-radius:999px;padding:7px 15px;cursor:pointer;margin-top:12px;}
   .toggle-btn:hover{background:var(--accent);color:var(--surface);}
@@ -145,7 +215,7 @@
 
   @media print{
     body{background:#fff;}
-    .action-bar, .toggle-btn, .chart-tooltip, .export-status{ display:none !important; }
+    .action-bar, .toggle-btn, .chart-tooltip, .export-status, .reset-btn, .add-family-btn, .add-expense-btn, .remove-btn{ display:none !important; }
     main.layout{ grid-template-columns:1fr; }
     aside.inputs{ position:static; }
     .card, .tile, aside.inputs{ box-shadow:none; break-inside:avoid; }
@@ -158,9 +228,9 @@
 <div class="app" id="appRoot">
   <div class="header-row">
     <header>
-      <div class="eyebrow">은퇴 설계 · 연금 인출 시뮬레이션</div>
+      <div class="eyebrow">은퇴 설계 · 가구 통합 연금 인출 시뮬레이션</div>
       <h1>연금 인출 계산기</h1>
-      <p class="subtitle">현재 자산과 추가 적립액이 연 수익률로 불어난 뒤, 은퇴 후 정해진 기간 동안 매달 얼마씩 꺼내 쓸 수 있는지 계산합니다. 왼쪽 값을 바꾸면 오른쪽 결과가 즉시 갱신됩니다. 세금·중도 변동성은 반영하지 않은 단순 복리 추정치입니다.</p>
+      <p class="subtitle">가족 구성원 각자의 자산·적립·국민연금을 따로 계산한 뒤, 이를 합산해 가정 전체의 인출 계획을 보여줍니다. 구성원별로 예상되는 교육비·의료비 등 목돈 지출을 시점·기간·증감률과 함께 등록하면 가구 전체 자산 흐름에 반영됩니다. 세금·시장 변동성은 반영하지 않은 단순 복리 추정치이며, 아래 값은 예시이므로 자유롭게 바꿔서 사용하세요.</p>
     </header>
     <div class="action-bar" id="actionBar">
       <button class="action-btn" id="printBtn" type="button">🖨 인쇄</button>
@@ -174,87 +244,22 @@
     </div>
   </div>
 
+  <div class="card" id="familyCard">
+    <h2>가족 구성원 &amp; 개별 계산</h2>
+    <p class="desc">구성원마다 이름·나이와 함께 본인 명의 자산·적립·인출 계획을 입력하면 각자 따로 계산됩니다. 자산이 없는 구성원(예: 자녀)은 "자산·연금 계좌 계산 포함"을 꺼서 지출 항목만 반영할 수 있습니다. 인출 방식은 완전 소진(인출기간 종료 시 잔액 0) 또는 원금 보존(이자만 인출) 중 선택합니다. 예상 지출은 일시금·매년·매월 중 빈도를 고르고, 시작 시점은 나이 기준 또는 지금부터 몇 년 후로 입력할 수 있으며 연 증감률(마이너스 가능)로 미래 금액을 자동 환산합니다. 구성원 최대 8명, 구성원당 지출 항목 최대 5건까지 등록할 수 있습니다.</p>
+    <div id="familyContainer"></div>
+    <button type="button" class="add-family-btn" id="addFamilyBtn">+ 가족 구성원 추가</button>
+  </div>
+
   <main class="layout">
     <aside class="inputs">
-      <h2>가정 값 입력</h2>
+      <div class="aside-head">
+        <h2>공통 값 입력</h2>
+        <button type="button" class="reset-btn" id="resetBtn">↺ 초기화</button>
+      </div>
 
       <fieldset>
-        <legend>자산 &amp; 적립</legend>
-        <div class="field">
-          <div class="field-head">
-            <label for="assetNum">현재 총 자산</label>
-            <div class="unitval"><input type="number" id="assetNum" value="2.0" step="0.1" min="0"><span class="unit">억원</span></div>
-          </div>
-          <input type="range" id="assetRange" value="2.0" step="0.1" min="0" max="30">
-        </div>
-        <div class="field">
-          <div class="field-head">
-            <label for="contribNum">월 추가 적립액</label>
-            <div class="unitval"><input type="number" id="contribNum" value="50" step="5" min="0"><span class="unit">만원</span></div>
-          </div>
-          <input type="range" id="contribRange" value="50" step="5" min="0" max="500">
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>기간 &amp; 수익률</legend>
-        <div class="field">
-          <div class="field-head">
-            <label for="accYearsNum">적립(은퇴까지) 기간</label>
-            <div class="unitval"><input type="number" id="accYearsNum" value="7" step="1" min="1"><span class="unit">년</span></div>
-          </div>
-          <input type="range" id="accYearsRange" value="7" step="1" min="1" max="30">
-        </div>
-        <div class="field">
-          <div class="field-head">
-            <label for="accRateNum">적립 구간 연 기대수익률</label>
-            <div class="unitval"><input type="number" id="accRateNum" value="6" step="0.1" min="0"><span class="unit">%</span></div>
-          </div>
-          <input type="range" id="accRateRange" value="6" step="0.1" min="0" max="15">
-        </div>
-        <div class="field">
-          <div class="field-head">
-            <label for="withYearsNum">인출 기간</label>
-            <div class="unitval"><input type="number" id="withYearsNum" value="20" step="1" min="1"><span class="unit">년</span></div>
-          </div>
-          <input type="range" id="withYearsRange" value="20" step="1" min="5" max="40">
-        </div>
-        <div class="field">
-          <div class="field-head">
-            <label for="withRateNum">인출 구간 연 기대수익률</label>
-            <div class="unitval"><input type="number" id="withRateNum" value="4" step="0.1" min="0"><span class="unit">%</span></div>
-          </div>
-          <input type="range" id="withRateRange" value="4" step="0.1" min="0" max="10">
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>인출 방식</legend>
-        <div class="radio-group">
-          <label class="radio-option">
-            <input type="radio" name="mode" value="deplete" checked>
-            <span>완전 소진<span class="opt-desc">인출 기간이 끝나는 시점에 잔액이 0이 되도록 매달 동일한 금액을 인출</span></span>
-          </label>
-          <label class="radio-option">
-            <input type="radio" name="mode" value="preserve">
-            <span>원금 보존(이자만 인출)<span class="opt-desc">은퇴 시점 자산을 그대로 유지하고, 매달 발생하는 이자만 인출</span></span>
-          </label>
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>국민연금 &amp; 물가</legend>
-        <div class="field">
-          <div class="field-head">
-            <label for="pensionNum">국민연금 월 예상 수령액</label>
-            <div class="unitval"><input type="number" id="pensionNum" value="100" step="5" min="0"><span class="unit">만원</span></div>
-          </div>
-          <input type="range" id="pensionRange" value="100" step="5" min="0" max="300">
-        </div>
-        <label class="checkbox-row">
-          <input type="checkbox" id="colaCheck" checked>
-          <span>국민연금 물가연동 적용<span class="opt-desc">체크 시 인출 기간에도 물가상승률만큼 매년 증액된다고 가정(실질가치 유지)</span></span>
-        </label>
+        <legend>물가</legend>
         <div class="field">
           <div class="field-head">
             <label for="inflationNum">연 물가상승률</label>
@@ -263,51 +268,114 @@
           <input type="range" id="inflationRange" value="2.5" step="0.1" min="0" max="6">
         </div>
       </fieldset>
+
+      <fieldset>
+        <legend>가구 생활비</legend>
+        <p style="margin:0;font-size:12px;color:var(--ink-secondary);line-height:1.55;">국민연금이나 포트폴리오 인출 등 가구 소득이 시작되는 시점부터 반영됩니다. 그 이전(적립 기간)의 생활비는 급여 등 현재 소득으로 충당된다고 가정해 계산에서 제외합니다. 0으로 두면 생활비를 반영하지 않습니다.</p>
+        <div class="field">
+          <div class="field-head">
+            <label for="livingExpenseNum">가구 월 생활비(오늘 기준)</label>
+            <div class="unitval"><input type="number" id="livingExpenseNum" value="250" step="10" min="0"><span class="unit">만원</span></div>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label for="livingRateNum">연 증감률</label>
+            <div class="unitval"><input type="number" id="livingRateNum" value="2.5" step="0.1"><span class="unit">%</span></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>국민연금</legend>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="pensionMode" value="individual" checked>
+            <span>개별 입력<span class="opt-desc">구성원 카드마다 각자의 국민연금 월 예상 수령액을 입력</span></span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="pensionMode" value="combined">
+            <span>통합 입력<span class="opt-desc">가구 전체 국민연금(부부 합산 등)을 한 번에 입력</span></span>
+          </label>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="colaCheck" checked>
+          <span>물가연동 적용<span class="opt-desc">체크 시 각 연금이 개시 이후 물가상승률만큼 매년 증액된다고 가정합니다.</span></span>
+        </label>
+        <div class="combined-pension-fields" id="combinedPensionBlock" style="display:none;">
+          <div class="field">
+            <div class="field-head">
+              <label for="combinedAmountNum">통합 국민연금 월 예상 수령액</label>
+              <div class="unitval"><input type="number" id="combinedAmountNum" value="140" step="5" min="0"><span class="unit">만원</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="combinedStartNum">개시 시점(지금부터)</label>
+              <div class="unitval"><input type="number" id="combinedStartNum" value="10" step="1" min="0"><span class="unit">년 후</span></div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
     </aside>
 
     <section class="results">
       <div class="summary-grid">
         <div class="tile">
-          <div class="label">은퇴 시점 예상 자산</div>
+          <div class="label">가구 합산 은퇴자산</div>
           <div class="value" id="tileFV">–</div>
           <div class="sub" id="tileFVsub">–</div>
         </div>
         <div class="tile highlight">
-          <div class="label">월 포트폴리오 인출액</div>
+          <div class="label">가구 월 포트폴리오 인출액</div>
           <div class="value" id="tilePMT">–</div>
-          <div class="sub" id="tilePMTsub">인출 시작 시점 기준</div>
+          <div class="sub" id="tilePMTsub">–</div>
         </div>
         <div class="tile highlight">
           <div class="label">국민연금 포함 총 월수령액</div>
           <div class="value" id="tileTotal">–</div>
-          <div class="sub" id="tileTotalSub">인출 시작 시점, 명목가치</div>
+          <div class="sub" id="tileTotalSub">–</div>
         </div>
         <div class="tile">
           <div class="label">오늘 기준 실질 총 수령액</div>
           <div class="value" id="tileReal">–</div>
-          <div class="sub" id="tileRealSub">물가상승률 반영, 인출 시작 시점</div>
+          <div class="sub" id="tileRealSub">물가상승률 반영</div>
         </div>
       </div>
 
       <div class="card">
-        <h2>자산 잔액 추이</h2>
-        <p class="desc">지금부터 자산이 어떻게 늘고 줄어드는지 보여줍니다. 그래프 위에 마우스를 올리면 연도별 잔액을 확인할 수 있습니다.</p>
-        <div class="legend-row">
-          <span class="legend-chip"><span class="legend-swatch" style="background:var(--accent)"></span>적립 구간</span>
-          <span class="legend-chip"><span class="legend-swatch" style="background:var(--accent-gold)"></span>인출 구간</span>
+        <h2>구성원별 계산 결과</h2>
+        <p class="desc">각 구성원을 독립된 계좌로 계산한 결과입니다. 가구 통합 결과는 이 값들을 모두 더한 뒤, 등록된 가족 지출을 반영해 산출합니다.</p>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>구성원</th><th>구분</th><th>은퇴 시점</th><th>은퇴 시 자산</th><th>월 인출 가능액</th><th>국민연금</th></tr></thead>
+            <tbody id="memberSummaryBody"></tbody>
+          </table>
         </div>
+      </div>
+
+      <div class="card">
+        <h2>가구 자산 잔액 추이</h2>
+        <p class="desc">구성원별 계산 결과를 합산한 가구 전체 자산이 지금부터 어떻게 늘고 줄어드는지 보여줍니다. 그래프 위에 마우스를 올리면 연도별 잔액과 그 해의 가족 지출을 확인할 수 있습니다.</p>
+        <div class="warning-banner" id="depletionWarning" style="display:none;">
+          <span class="wb-icon">⚠️</span>
+          <span id="depletionWarningText"></span>
+        </div>
+        <div class="legend-row">
+          <span class="legend-chip"><span class="legend-swatch" style="background:var(--accent)"></span>가구 합산 잔액</span>
+          <span class="legend-chip"><span class="legend-line" style="border-color:var(--accent-gold)"></span>구성원 은퇴 시점</span>
+          <span class="legend-chip"><span class="legend-swatch" style="background:var(--critical)"></span>가족 지출 이벤트</span>
+        </div>
+        <p class="retire-list" id="retireListText"></p>
         <div class="chart-wrap" id="chartWrap">
-          <svg id="chartSvg" viewBox="0 0 800 340" preserveAspectRatio="xMidYMid meet" role="img" aria-label="자산 잔액 추이 그래프">
+          <svg id="chartSvg" viewBox="0 0 800 340" preserveAspectRatio="xMidYMid meet" role="img" aria-label="가구 자산 잔액 추이 그래프">
             <g id="gridGroup"></g>
             <path id="areaAcc" fill="none" stroke="none"></path>
-            <path id="areaWith" fill="none" stroke="none"></path>
             <path id="lineAcc" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <path id="lineWith" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <line id="retireMarker" stroke-width="1" stroke-dasharray="3,3"></line>
-            <circle id="retireDot" r="4" stroke-width="1.5"></circle>
-            <text id="retireLabel" font-family="IBM Plex Sans KR" font-size="11"></text>
+            <g id="retireMarkers"></g>
             <g id="xAxisGroup" font-family="IBM Plex Mono" font-size="11"></g>
             <g id="yAxisGroup" font-family="IBM Plex Mono" font-size="11"></g>
+            <g id="expenseMarkers"></g>
             <line id="hoverLine" stroke="var(--ink-secondary)" stroke-width="1" opacity="0"></line>
             <circle id="hoverDot" r="4.5" opacity="0"></circle>
             <rect id="hoverCapture" fill="transparent"></rect>
@@ -317,7 +385,7 @@
         <button class="toggle-btn" id="yearTableToggle" aria-expanded="false">연도별 표로 보기</button>
         <div class="year-table table-scroll" id="yearTableWrap">
           <table>
-            <thead><tr><th>연차</th><th>구간</th><th>연말 잔액</th></tr></thead>
+            <thead><tr><th>연차</th><th>구성원 상태</th><th>연말 잔액</th><th>가족 지출</th></tr></thead>
             <tbody id="yearTableBody"></tbody>
           </table>
         </div>
@@ -325,10 +393,10 @@
 
       <div class="card">
         <h2>구매력으로 본 인출액</h2>
-        <p class="desc">명목 금액은 그대로지만, 물가가 오르면 같은 돈으로 살 수 있는 것은 줄어듭니다. 인출을 시작하는 달과 인출이 끝나는 마지막 달의 실질가치(오늘 돈 기준)를 비교합니다.</p>
+        <p class="desc">명목 금액은 그대로지만, 물가가 오르면 같은 돈으로 살 수 있는 것은 줄어듭니다. 가구 전원이 은퇴를 마치는 시점과 계획 마지막 시점의 실질가치(오늘 돈 기준)를 비교합니다.</p>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>구분</th><th>인출 시작(명목)</th><th>인출 종료(명목)</th><th>인출 시작(오늘 가치)</th><th>인출 종료(오늘 가치)</th></tr></thead>
+            <thead><tr><th>구분</th><th>기준 시점(명목)</th><th>계획 종료(명목)</th><th>기준 시점(오늘 가치)</th><th>계획 종료(오늘 가치)</th></tr></thead>
             <tbody id="powerTableBody"></tbody>
           </table>
         </div>
@@ -336,11 +404,23 @@
 
       <div class="card">
         <h2>수익률 민감도</h2>
-        <p class="desc">현재 설정한 수익률이 ±2%p 달라졌을 때 결과가 어떻게 바뀌는지 보여줍니다. 적립·인출 구간에 동일한 폭으로 적용했습니다.</p>
+        <p class="desc">모든 구성원의 적립·인출 수익률이 동일한 폭(±2%p)으로 달라졌을 때 가구 합산 결과가 어떻게 바뀌는지 보여줍니다.</p>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>시나리오</th><th>적립 수익률</th><th>인출 수익률</th><th>은퇴시점 자산</th><th>월 인출 가능액</th></tr></thead>
+            <thead><tr><th>시나리오</th><th>가구 합산 은퇴자산</th><th>가구 월 인출 가능액</th><th>국민연금 포함 총 월수령액</th></tr></thead>
             <tbody id="sensitivityBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>평가 · 가구 소득 대비 지출</h2>
+        <p class="desc">가구의 예상 월수령액(포트폴리오 인출 + 국민연금)을 연 단위로 환산한 소득과, 그 해에 등록된 가족 지출(생활비·교육비·의료비 등)을 비교합니다. 지출이 소득을 초과하는 해는 별도 목돈 마련이나 자산 인출 확대가 필요할 수 있습니다. 아직 국민연금·포트폴리오 인출이 시작되지 않은 적립 기간은 "적립기간"으로 표시되며, 이 시기의 지출은 급여 등 현재 소득으로 충당된다고 가정해 부족으로 평가하지 않습니다.</p>
+        <div class="eval-summary" id="evalSummary"></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>연차</th><th>가구 예상 소득(연)</th><th>등록 지출(연)</th><th>수지</th><th>상태</th></tr></thead>
+            <tbody id="evalTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -349,8 +429,10 @@
         <h2>참고 사항</h2>
         <ul class="notes">
           <li><strong>세금 미반영</strong> — 연금소득세, ISA·연금저축·IRP 등 계좌별 과세이연·분리과세 효과는 계산에 넣지 않았습니다. 실제 수령액은 계좌 구성에 따라 달라집니다.</li>
+          <li><strong>구성원별 계산 후 합산</strong> — 각 구성원의 자산은 독립된 계좌처럼 각자의 수익률로 성장·감소한다고 가정합니다. 가족 지출은 가구 합산 자산에서 발생 시점에 차감되며, 이후의 복리 성장은 그 시점 가구 자산의 증감률을 따릅니다.</li>
+          <li><strong>가구 생활비는 소득 개시 이후부터 반영</strong> — 국민연금이나 포트폴리오 인출이 시작되기 전(적립 기간)의 생활비는 급여 등 현재 소득으로 충당된다고 가정해 계산과 "평가" 표에서 제외합니다. 반면 교육비·의료비 등 구성원별 목돈 지출은 등록한 시점이 적립 기간이라도 자산 잔액에서 그대로 차감됩니다(저축을 미리 헐어 쓰는 셈이기 때문입니다).</li>
           <li><strong>수익률은 확정값이 아닙니다</strong> — 실제 시장은 매년 오르내리며, 특히 인출 초반에 큰 폭의 하락이 오면(수익률 순서 위험) 같은 평균 수익률이라도 완전 소진 시점이 앞당겨질 수 있습니다.</li>
-          <li><strong>국민연금은 실제로 물가에 연동</strong>되는 제도입니다. 이 계산기의 "물가연동 적용" 옵션을 켜두면 실질가치가 유지된다고 가정하고, 꺼두면 인출 기간 내내 첫 수령액이 고정된다고 가정합니다.</li>
+          <li><strong>국민연금은 실제로 물가에 연동</strong>되는 제도입니다. "물가연동 적용"을 켜두면 각 연금이 개시 시점 이후 실질가치를 유지한다고 가정하고, 꺼두면 개시 시점의 금액이 계획 기간 내내 고정된다고 가정합니다.</li>
           <li><strong>기대여명 감안</strong> — 2024년 기준 한국인 평균 기대수명은 83.7세로 역대 최고 수준입니다(여성이 남성보다 높음). 은퇴 나이에 인출 기간을 더한 나이가 평균 기대수명보다 낮다면, 인출 기간을 늘리거나 "원금 보존" 방식을 함께 검토할 필요가 있습니다.</li>
         </ul>
       </div>
@@ -376,8 +458,18 @@
   function fmtEok(n){ return (n/100000000).toFixed(2) + '억원'; }
   function fmtManwon(n){ return Math.round(n/10000).toLocaleString('ko-KR') + '만원'; }
   function clamp(v,min,max){ return Math.min(Math.max(v,min),max); }
+  function numOrNull(v){ var f = parseFloat(v); return isNaN(f) ? null : f; }
 
-  // ---- pair a range + number input, keep them in sync ----
+  var CATEGORY_META = {
+    education: { emoji:'🎓', label:'교육비' },
+    medical:   { emoji:'🏥', label:'의료비' },
+    housing:   { emoji:'🏠', label:'목돈/주택' },
+    other:     { emoji:'📌', label:'기타' },
+    living:    { emoji:'🧾', label:'생활비' }
+  };
+  var FREQ_LABEL = { lump:'일시금', annual:'매년', monthly:'매월' };
+
+  // ---- pair a range + number input, keep them in sync (used for inflation only) ----
   function bindPair(rangeId, numId, onChange){
     var r = $(rangeId), n = $(numId);
     r.addEventListener('input', function(){ n.value = r.value; onChange(); });
@@ -388,15 +480,9 @@
     });
   }
 
-  // ---- finance math ----
-  function accumulate(pv, contrib, years, ratePct){
-    var n = Math.round(years*12), r = ratePct/100/12;
-    var fvLump, fvAnnuity;
-    if(Math.abs(r) < 1e-9){ fvLump = pv; fvAnnuity = contrib*n; }
-    else { fvLump = pv*Math.pow(1+r,n); fvAnnuity = contrib*((Math.pow(1+r,n)-1)/r); }
-    return { fvLump: fvLump, fvAnnuity: fvAnnuity, total: fvLump+fvAnnuity };
-  }
-
+  // =========================================================================
+  // ---- core finance math (per member, independent account) ----
+  // =========================================================================
   function withdrawAmount(fv, years, ratePct, mode){
     var n = Math.round(years*12), r = ratePct/100/12;
     if(mode === 'preserve'){ return fv*r; }
@@ -404,23 +490,270 @@
     return fv*r/(1-Math.pow(1+r,-n));
   }
 
-  function buildSeries(pv, contrib, accYears, accRate, withYears, withRate, mode){
-    var accN = Math.round(accYears*12), withN = Math.round(withYears*12);
-    var r1 = accRate/100/12, r2 = withRate/100/12;
+  function memberSeries(m){
+    var accYears = Math.max(1, Math.round(m.accYears)||1);
+    var withYears = Math.max(1, Math.round(m.withYears)||1);
+    var accN = accYears*12, withN = withYears*12;
+    var totalN = accN+withN;
+    var r1 = (m.accRate||0)/100/12, r2 = (m.withRate||0)/100/12;
+    var pv = (m.asset||0)*1e8, contrib = (m.contrib||0)*1e4;
     var bal = [pv];
-    for(var i=1;i<=accN;i++){ bal.push(bal[i-1]*(1+r1)+contrib); }
-    var fv = bal[accN];
-    var pmt = mode === 'preserve' ? fv*r2 : withdrawAmount(fv, withYears, withRate, 'deplete');
-    for(var j=1;j<=withN;j++){
-      var nb = bal[bal.length-1]*(1+r2) - pmt;
-      if(mode === 'deplete' && j === withN) nb = 0;
-      if(nb < 0) nb = 0;
+    var fv=null, pmt=null;
+    for(var i=1;i<=totalN;i++){
+      var prev = bal[bal.length-1], nb;
+      if(i<=accN){ nb = prev*(1+r1)+contrib; }
+      else {
+        if(pmt===null){ fv = bal[accN]; pmt = m.mode==='preserve' ? fv*r2 : withdrawAmount(fv, withYears, m.withRate||0, 'deplete'); }
+        nb = prev*(1+r2)-pmt;
+      }
+      if(nb<0) nb=0;
       bal.push(nb);
     }
-    return { bal: bal, fv: fv, pmt: pmt, accN: accN, withN: withN };
+    if(fv===null){ fv = bal[accN]; pmt = m.mode==='preserve' ? fv*r2 : withdrawAmount(fv, withYears, m.withRate||0, 'deplete'); }
+    return { bal:bal, fv:fv, pmt:pmt, accN:accN, withN:withN, totalN:totalN, r2:r2, mode:m.mode, accYears:accYears, withYears:withYears };
   }
 
+  function padSeries(s, maxN){
+    var bal = s.bal.slice();
+    if(bal.length-1 >= maxN) return bal.slice(0, maxN+1);
+    var lastVal = bal[bal.length-1];
+    for(var i=bal.length;i<=maxN;i++){
+      var nb = s.mode==='preserve' ? Math.max(0, lastVal*(1+s.r2)-s.pmt) : 0;
+      bal.push(nb);
+      lastVal = nb;
+    }
+    return bal;
+  }
+
+  // household combined balance = sum of independent member accounts, minus
+  // pooled family expenses. Expenses compound afterward at the growth rate
+  // implied by the (pre-expense) combined member sum at that point in time,
+  // so a deduction early on still costs the household the growth it would
+  // have earned, without needing to attribute it to any single member's
+  // account (important for members with no account of their own, e.g. kids).
+  function applyExpenses(preExpenseArr, expenseByMonth, maxN){
+    var adj = new Array(maxN+1);
+    adj[0] = Math.max(0, preExpenseArr[0] - (expenseByMonth[0]||0));
+    var depletedAtMonth = null;
+    for(var i=1;i<=maxN;i++){
+      var prevPre = preExpenseArr[i-1], curPre = preExpenseArr[i];
+      var growth = prevPre>1e-6 ? curPre/prevPre : 1;
+      var nb = adj[i-1]*growth - (expenseByMonth[i]||0);
+      if(nb < -100){ if(depletedAtMonth===null) depletedAtMonth = i; nb = 0; }
+      else if(nb < 0){ nb = 0; }
+      adj[i] = nb;
+    }
+    return { bal: adj, depletedAtMonth: depletedAtMonth };
+  }
+
+  // =========================================================================
+  // ---- family members & per-member expenses ----
+  // =========================================================================
+  var famIdSeq = 1;
+
+  function defaultMembers(){
+    famIdSeq = 1;
+    return [
+      { id: famIdSeq++, name:'본인', age:'45', hasAccount:true, asset:1.0, contrib:30, accYears:10, accRate:6, withYears:25, withRate:4, mode:'deplete', pension:80, expenses:[
+        { id: famIdSeq++, label:'노후 의료비', category:'medical', startMode:'year', startValue:10, duration:20, frequency:'monthly', amount:30, rate:4 }
+      ]},
+      { id: famIdSeq++, name:'배우자', age:'43', hasAccount:true, asset:0.5, contrib:20, accYears:12, accRate:6, withYears:23, withRate:4, mode:'deplete', pension:60, expenses:[] },
+      { id: famIdSeq++, name:'자녀', age:'10', hasAccount:false, asset:0, contrib:0, accYears:10, accRate:0, withYears:1, withRate:0, mode:'deplete', pension:0, expenses:[
+        { id: famIdSeq++, label:'대학 등록금', category:'education', startMode:'age', startValue:19, duration:4, frequency:'annual', amount:1200, rate:3 }
+      ]}
+    ];
+  }
+  var familyMembers = defaultMembers();
+
+  function newMember(){
+    return { id: famIdSeq++, name:'가족 구성원 '+(familyMembers.length+1), age:'', hasAccount:true, asset:0, contrib:0, accYears:10, accRate:6, withYears:25, withRate:4, mode:'deplete', pension:0, expenses:[] };
+  }
+  function newExpense(){
+    return { id: famIdSeq++, label:'', category:'other', startMode:'year', startValue:5, duration:1, frequency:'lump', amount:500, rate:3 };
+  }
+
+  function expenseStartYear(e, m){
+    if(e.startMode==='age'){
+      var age = numOrNull(m.age);
+      if(age!==null){ return Math.max(0, (parseFloat(e.startValue)||0) - age); }
+    }
+    return Math.max(0, parseFloat(e.startValue)||0);
+  }
+
+  // expand every member's expense items into individual (month, amount) events
+  function collectAllExpenses(members, maxYears){
+    var list = [];
+    members.forEach(function(m){
+      (m.expenses||[]).forEach(function(e){
+        var startYear = clamp(expenseStartYear(e,m), 0, maxYears);
+        var duration = Math.max(1, Math.round(parseFloat(e.duration)||1));
+        var baseAmt = (parseFloat(e.amount)||0)*1e4;
+        var rate = parseFloat(e.rate)||0;
+        var label = e.label || '(이름 없는 지출)';
+        if(e.frequency==='lump'){
+          list.push({ year: Math.round(startYear), month: Math.round(startYear*12), amount: baseAmt*Math.pow(1+rate/100,startYear), label:label, member:m.name, category:e.category });
+        } else if(e.frequency==='annual'){
+          for(var k=0;k<duration;k++){
+            var y = startYear+k;
+            if(y>maxYears) break;
+            list.push({ year: Math.round(y), month: Math.round(y*12), amount: baseAmt*Math.pow(1+rate/100,y), label:label, member:m.name, category:e.category });
+          }
+        } else { // monthly
+          var totalMonths = duration*12;
+          for(var mo=0; mo<totalMonths; mo++){
+            var month = Math.round(startYear*12)+mo;
+            var yFrac = month/12;
+            if(yFrac>maxYears) break;
+            list.push({ year: Math.floor(yFrac), month: month, amount: baseAmt*Math.pow(1+rate/100,yFrac), label:label, member:m.name, category:e.category });
+          }
+        }
+      });
+    });
+    return list;
+  }
+
+  function groupEventsByYear(events){
+    var g = {};
+    events.forEach(function(e){
+      g[e.year] = g[e.year] || {};
+      var key = e.member+'||'+e.label+'||'+e.category;
+      if(!g[e.year][key]) g[e.year][key] = { member:e.member, label:e.label, category:e.category, amount:0 };
+      g[e.year][key].amount += e.amount;
+    });
+    return g;
+  }
+
+  function householdPensionSeries(members, mseries, maxN, opts){
+    var arr = new Array(maxN+1).fill(0);
+    if(opts.pensionMode==='individual'){
+      members.forEach(function(m, idx){
+        var amt = (parseFloat(m.pension)||0)*1e4;
+        if(amt<=0) return;
+        var x = mseries[idx];
+        var startMonth = x.member.hasAccount ? x.s.accN : 0;
+        for(var i=startMonth;i<=maxN;i++){
+          var yrs = (i-startMonth)/12;
+          arr[i] += opts.cola ? amt*Math.pow(1+opts.inflation/100, yrs) : amt;
+        }
+      });
+    } else {
+      var amt = (parseFloat(opts.combinedAmount)||0)*1e4;
+      var startMonth = Math.max(0, Math.round((parseFloat(opts.combinedStartYear)||0)*12));
+      for(var i=startMonth;i<=maxN;i++){
+        var yrs = (i-startMonth)/12;
+        arr[i] += opts.cola ? amt*Math.pow(1+opts.inflation/100, yrs) : amt;
+      }
+    }
+    return arr;
+  }
+
+  // full household computation. rateDelta shifts every hasAccount member's
+  // acc/withdrawal rate by the same amount (used for sensitivity scenarios).
+  function computeHousehold(members, opts, rateDelta){
+    rateDelta = rateDelta||0;
+
+    var mseries = members.map(function(m){
+      var mm;
+      if(m.hasAccount){
+        mm = { asset:m.asset, contrib:m.contrib, accYears:m.accYears, accRate:Math.max(0,(m.accRate||0)+rateDelta), withYears:m.withYears, withRate:Math.max(0,(m.withRate||0)+rateDelta), mode:m.mode };
+      } else {
+        mm = { asset:0, contrib:0, accYears:1, accRate:0, withYears:1, withRate:0, mode:'deplete' };
+      }
+      var s = memberSeries(mm);
+      return { member:m, mm:mm, s:s };
+    });
+
+    var baseMaxYears = 0;
+    mseries.forEach(function(x){ if(x.member.hasAccount) baseMaxYears = Math.max(baseMaxYears, x.mm.accYears+x.mm.withYears); });
+
+    var extentYears = 0;
+    members.forEach(function(m){
+      (m.expenses||[]).forEach(function(e){
+        var startYear = expenseStartYear(e,m);
+        var dur = Math.max(1, Math.round(parseFloat(e.duration)||1));
+        extentYears = Math.max(extentYears, startYear+dur);
+      });
+    });
+    var combinedExtent = opts.pensionMode==='combined' ? (parseFloat(opts.combinedStartYear)||0) : 0;
+
+    var maxYears = Math.max(baseMaxYears, extentYears, combinedExtent, 5);
+    var maxN = Math.round(maxYears*12);
+
+    var preExpense = new Array(maxN+1).fill(0);
+    mseries.forEach(function(x){
+      var bal = padSeries(x.s, maxN);
+      for(var i=0;i<=maxN;i++) preExpense[i] += bal[i];
+    });
+
+    var refMonth = 0;
+    mseries.forEach(function(x){ if(x.member.hasAccount) refMonth = Math.max(refMonth, x.s.accN); });
+
+    var pensionArr = householdPensionSeries(members, mseries, maxN, opts);
+
+    function flowAt(x, month){
+      if(!x.member.hasAccount) return 0;
+      var s = x.s;
+      if(month < s.accN) return 0;
+      if(month <= s.totalN) return s.pmt;
+      return x.mm.mode==='preserve' ? s.pmt : 0;
+    }
+    var incomeByMonth = new Array(maxN+1);
+    for(var t=0;t<=maxN;t++){
+      var flow = 0;
+      for(var j=0;j<mseries.length;j++) flow += flowAt(mseries[j], t);
+      incomeByMonth[t] = flow + pensionArr[t];
+    }
+    var pmtAtRef = 0; mseries.forEach(function(x){ pmtAtRef += flowAt(x, refMonth); });
+    var pmtAtEnd = 0; mseries.forEach(function(x){ pmtAtEnd += flowAt(x, maxN); });
+
+    // first month the household has any income at all (portfolio withdrawal
+    // or pension). Household living expenses are only charged from this
+    // point on — before it (the accumulation years) day-to-day costs are
+    // assumed covered by salary/current income, which this tool does not
+    // otherwise model, so charging them against a 0 "household income" would
+    // be a category error, not a real shortfall.
+    var firstIncomeMonth = null;
+    for(var ti=0; ti<=maxN; ti++){ if(incomeByMonth[ti] > 1){ firstIncomeMonth = ti; break; } }
+
+    var events = collectAllExpenses(members, maxYears);
+    var livingAmt = (parseFloat(opts.livingExpense)||0)*1e4;
+    var livingRate = parseFloat(opts.livingRate)||0;
+    if(livingAmt>0 && firstIncomeMonth!==null){
+      for(var lm=firstIncomeMonth; lm<=maxN; lm++){
+        var lyFrac = lm/12;
+        events.push({ year: Math.floor(lyFrac), month: lm, amount: livingAmt*Math.pow(1+livingRate/100, lyFrac), label:'생활비', member:'가구 전체', category:'living' });
+      }
+    }
+    var expenseByMonth = {};
+    events.forEach(function(e){ expenseByMonth[e.month] = (expenseByMonth[e.month]||0) + e.amount; });
+    var eventsByYear = groupEventsByYear(events);
+    var expenseByYearTotal = {};
+    events.forEach(function(e){ expenseByYearTotal[e.year] = (expenseByYearTotal[e.year]||0) + e.amount; });
+
+    var applied = applyExpenses(preExpense, expenseByMonth, maxN);
+
+    var retireMap = {};
+    mseries.forEach(function(x){
+      if(!x.member.hasAccount) return;
+      var y = x.mm.accYears;
+      retireMap[y] = retireMap[y] || [];
+      retireMap[y].push(x.member.name);
+    });
+    var retirePoints = Object.keys(retireMap).map(function(k){ return { year: parseInt(k,10), members: retireMap[k] }; }).sort(function(a,b){ return a.year-b.year; });
+
+    return {
+      mseries: mseries, maxN: maxN, maxYears: maxYears, refMonth: refMonth,
+      preExpense: preExpense, bal: applied.bal, depletedAtMonth: applied.depletedAtMonth,
+      pensionArr: pensionArr, incomeByMonth: incomeByMonth, firstIncomeMonth: firstIncomeMonth,
+      pmtAtRef: pmtAtRef, pmtAtEnd: pmtAtEnd,
+      events: events, eventsByYear: eventsByYear, expenseByYearTotal: expenseByYearTotal,
+      retirePoints: retirePoints
+    };
+  }
+
+  // =========================================================================
   // ---- chart ----
+  // =========================================================================
   var W=800,H=340, ML=58, MR=16, MT=18, MB=34;
   var plotW = W-ML-MR, plotH = H-MT-MB, base = MT+plotH;
 
@@ -432,42 +765,33 @@
     return f*mag;
   }
 
-  function drawChart(series, accYears, withYears){
+  function drawChart(res){
     var col = {
       accent: css.getPropertyValue('--accent').trim(),
       accentSoft: css.getPropertyValue('--accent-soft').trim(),
       gold: css.getPropertyValue('--accent-gold').trim(),
-      goldSoft: css.getPropertyValue('--accent-gold-soft').trim(),
       border: css.getPropertyValue('--border').trim(),
       inkSecondary: css.getPropertyValue('--ink-secondary').trim(),
-      surface: css.getPropertyValue('--surface').trim()
+      surface: css.getPropertyValue('--surface').trim(),
+      critical: css.getPropertyValue('--critical').trim()
     };
     $('areaAcc').setAttribute('fill', col.accentSoft);
-    $('areaWith').setAttribute('fill', col.goldSoft);
     $('lineAcc').setAttribute('stroke', col.accent);
-    $('lineWith').setAttribute('stroke', col.gold);
-    $('retireMarker').setAttribute('stroke', col.inkSecondary);
-    $('retireDot').setAttribute('fill', col.surface);
-    $('retireDot').setAttribute('stroke', col.inkSecondary);
-    $('retireLabel').setAttribute('fill', col.inkSecondary);
     $('xAxisGroup').setAttribute('fill', col.inkSecondary);
     $('yAxisGroup').setAttribute('fill', col.inkSecondary);
 
-    var totalYears = accYears+withYears;
+    var totalYears = res.maxYears;
     var pts = [];
     for(var y=0;y<=totalYears;y++){
-      var monthIdx = Math.min(y*12, series.bal.length-1);
-      pts.push({ year:y, bal: series.bal[monthIdx] });
+      var monthIdx = Math.min(y*12, res.bal.length-1);
+      pts.push({ year:y, bal: res.bal[monthIdx] });
     }
     var maxBal = 0;
     pts.forEach(function(p){ if(p.bal>maxBal) maxBal=p.bal; });
     var yMax = niceMax(maxBal*1.08);
 
-    function xs(y){ return ML + (y/totalYears)*plotW; }
+    function xs(yy){ return ML + (yy/totalYears)*plotW; }
     function ys(v){ return MT + plotH - (v/yMax)*plotH; }
-
-    var accPts = pts.filter(function(p){ return p.year<=accYears; });
-    var withPts = pts.filter(function(p){ return p.year>=accYears; });
 
     function lineD(arr){
       return arr.map(function(p,i){ return (i===0?'M':'L')+xs(p.year).toFixed(2)+','+ys(p.bal).toFixed(2); }).join(' ');
@@ -479,21 +803,34 @@
       d += ' L'+xs(arr[arr.length-1].year).toFixed(2)+','+base.toFixed(2)+' Z';
       return d;
     }
+    $('areaAcc').setAttribute('d', areaD(pts));
+    $('lineAcc').setAttribute('d', lineD(pts));
 
-    $('areaAcc').setAttribute('d', areaD(accPts));
-    $('areaWith').setAttribute('d', areaD(withPts));
-    $('lineAcc').setAttribute('d', lineD(accPts));
-    $('lineWith').setAttribute('d', lineD(withPts));
+    // per-member retirement markers (dashed vertical lines, deduped by year)
+    var rmg = $('retireMarkers'); rmg.innerHTML='';
+    res.retirePoints.forEach(function(rp){
+      var rx = xs(clamp(rp.year,0,totalYears));
+      var ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1',rx); ln.setAttribute('x2',rx);
+      ln.setAttribute('y1',MT); ln.setAttribute('y2',base);
+      ln.setAttribute('stroke', col.gold); ln.setAttribute('stroke-width','1'); ln.setAttribute('stroke-dasharray','3,3');
+      rmg.appendChild(ln);
+    });
+    var retireText = res.retirePoints.map(function(rp){ return rp.members.join('·')+' 은퇴 '+rp.year+'년 후'; }).join(' · ');
+    $('retireListText').textContent = retireText ? ('은퇴 시점 — ' + retireText) : '등록된 구성원 중 자산·연금 계좌를 포함한 구성원이 없습니다.';
 
-    // retirement marker
-    var rx = xs(accYears), ry = ys(pts.filter(function(p){return p.year===accYears;})[0].bal);
-    $('retireMarker').setAttribute('x1', rx); $('retireMarker').setAttribute('x2', rx);
-    $('retireMarker').setAttribute('y1', MT); $('retireMarker').setAttribute('y2', base);
-    $('retireDot').setAttribute('cx', rx); $('retireDot').setAttribute('cy', ry);
-    var lbl = $('retireLabel');
-    lbl.setAttribute('x', rx); lbl.setAttribute('y', MT-4);
-    lbl.setAttribute('text-anchor', accYears/totalYears>0.82 ? 'end':'middle');
-    lbl.textContent = '은퇴 시작 (' + accYears + '년 후)';
+    // family expense markers
+    var emg = $('expenseMarkers'); emg.innerHTML='';
+    Object.keys(res.eventsByYear).forEach(function(yStr){
+      var y = clamp(parseInt(yStr,10), 0, totalYears);
+      var pt = pts.filter(function(p){ return p.year===y; })[0];
+      if(!pt) return;
+      var mx = xs(y), my = ys(pt.bal);
+      var m = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      m.setAttribute('cx', mx); m.setAttribute('cy', my); m.setAttribute('r', 5);
+      m.setAttribute('fill', col.critical); m.setAttribute('stroke', col.surface); m.setAttribute('stroke-width','1.5');
+      emg.appendChild(m);
+    });
 
     // grid + y axis
     var gg = $('gridGroup'); gg.innerHTML='';
@@ -534,7 +871,7 @@
     var svg = $('chartSvg'), tooltip = $('chartTooltip'), wrap = $('chartWrap');
     hc.onmousemove = function(evt){
       var rect = svg.getBoundingClientRect();
-      var scaleX = W/rect.width, scaleY = H/rect.height;
+      var scaleX = W/rect.width;
       var svgX = (evt.clientX-rect.left)*scaleX;
       var yr = clamp(Math.round(((svgX-ML)/plotW)*totalYears), 0, totalYears);
       var p = pts[yr];
@@ -544,8 +881,8 @@
       $('hoverLine').setAttribute('opacity',1);
       var dot = $('hoverDot');
       dot.setAttribute('cx',px); dot.setAttribute('cy',py); dot.setAttribute('opacity',1);
-      dot.setAttribute('fill', p.year<=accYears ? css.getPropertyValue('--accent') : css.getPropertyValue('--accent-gold'));
-      dot.setAttribute('stroke', css.getPropertyValue('--surface'));
+      dot.setAttribute('fill', col.accent);
+      dot.setAttribute('stroke', col.surface);
       dot.setAttribute('stroke-width','2');
 
       var wrapRect = wrap.getBoundingClientRect();
@@ -554,8 +891,14 @@
       tooltip.style.left = dispX+'px';
       tooltip.style.top = dispY+'px';
       tooltip.style.opacity = 1;
-      $('ttTitle').textContent = (p.year===0?'현재':p.year+'년 후') + (p.year===accYears?' · 은퇴 시작':p.year<accYears?' · 적립 구간':' · 인출 구간');
-      $('ttValue').textContent = fmtWon(p.bal) + ' (약 ' + fmtEok(p.bal) + ')';
+      $('ttTitle').textContent = (p.year===0?'현재':p.year+'년 후');
+      var evsMap = res.eventsByYear[p.year];
+      var evText = '';
+      if(evsMap){
+        var items = Object.keys(evsMap).map(function(k){ var e=evsMap[k]; return (CATEGORY_META[e.category]||CATEGORY_META.other).emoji+' '+(e.member?e.member+' ':'')+e.label+' -'+fmtWon(e.amount); });
+        evText = ' · 지출: ' + items.join(', ');
+      }
+      $('ttValue').textContent = fmtWon(p.bal) + ' (약 ' + fmtEok(p.bal) + ')' + evText;
     };
     hc.onmouseleave = function(){
       $('hoverLine').setAttribute('opacity',0);
@@ -567,53 +910,344 @@
     var tbody = $('yearTableBody'); tbody.innerHTML='';
     pts.forEach(function(p){
       var tr = document.createElement('tr');
-      var phase = p.year===0 ? '시작' : p.year<accYears ? '적립' : p.year===accYears ? '은퇴 시작' : '인출';
-      tr.innerHTML = '<td>'+p.year+'년</td><td>'+phase+'</td><td>'+fmtWon(p.bal)+'</td>';
+      var statusParts = [];
+      res.mseries.forEach(function(x){
+        if(!x.member.hasAccount) return;
+        var phase = p.year < x.mm.accYears ? '적립' : (p.year <= x.mm.accYears+x.mm.withYears ? '인출' : (x.mm.mode==='preserve' ? '인출(지속)' : '종료'));
+        statusParts.push(x.member.name+':'+phase);
+      });
+      var evsMap = res.eventsByYear[p.year];
+      var evText = '–';
+      if(evsMap){
+        evText = Object.keys(evsMap).map(function(k){ var e=evsMap[k]; return (CATEGORY_META[e.category]||CATEGORY_META.other).emoji+' '+(e.member?e.member+' ':'')+e.label+' -'+fmtWon(e.amount); }).join('<br>');
+      }
+      tr.innerHTML = '<td>'+p.year+'년</td><td class="wrap-cell">'+(statusParts.join(', ')||'–')+'</td><td>'+fmtWon(p.bal)+'</td><td class="wrap-cell">'+evText+'</td>';
       tbody.appendChild(tr);
     });
   }
 
+  // =========================================================================
+  // ---- family member / expense DOM rendering ----
+  // =========================================================================
+  function pensionModeValue(){
+    var el = document.querySelector('input[name="pensionMode"]:checked');
+    return el ? el.value : 'individual';
+  }
+
+  function updateCombinedPensionVisibility(){
+    $('combinedPensionBlock').style.display = pensionModeValue()==='combined' ? 'flex' : 'none';
+  }
+
+  function refreshExpenseTimingUI(exp, startLabelEl, startInput, durationInput){
+    startLabelEl.textContent = exp.startMode==='age' ? '시작 나이(세)' : '시작 시점(년 후)';
+    startInput.value = exp.startValue;
+    if(exp.frequency==='lump'){ durationInput.disabled = true; durationInput.value = 1; exp.duration = 1; }
+    else { durationInput.disabled = false; }
+  }
+
+  function renderFamilySection(){
+    var container = $('familyContainer');
+    container.innerHTML = '';
+    var pensionMode = pensionModeValue();
+
+    familyMembers.forEach(function(member){
+      var card = document.createElement('div');
+      card.className = 'family-member';
+
+      // ---- head row: name, age, remove ----
+      var head = document.createElement('div');
+      head.className = 'family-member-head';
+      var nameInput = document.createElement('input');
+      nameInput.type = 'text'; nameInput.value = member.name; nameInput.setAttribute('aria-label','가족 구성원 이름');
+      nameInput.addEventListener('input', function(){ member.name = nameInput.value; render(); });
+
+      var ageField = document.createElement('div');
+      ageField.className = 'age-field';
+      var ageInput = document.createElement('input');
+      ageInput.type = 'number'; ageInput.min='0'; ageInput.max='120'; ageInput.step='1'; ageInput.placeholder='나이';
+      ageInput.value = member.age;
+      ageInput.setAttribute('aria-label','현재 나이');
+      ageInput.addEventListener('input', function(){ member.age = ageInput.value; render(); });
+      var ageUnit = document.createElement('span'); ageUnit.className='unit'; ageUnit.textContent='세';
+      ageField.appendChild(ageInput); ageField.appendChild(ageUnit);
+
+      var removeMemberBtn = document.createElement('button');
+      removeMemberBtn.type='button'; removeMemberBtn.className='remove-btn'; removeMemberBtn.textContent='구성원 삭제';
+      removeMemberBtn.addEventListener('click', function(){
+        familyMembers = familyMembers.filter(function(m){ return m.id !== member.id; });
+        renderFamilySection(); render();
+      });
+
+      head.appendChild(nameInput); head.appendChild(ageField); head.appendChild(removeMemberBtn);
+      card.appendChild(head);
+
+      // ---- has-account toggle ----
+      var hasAccRow = document.createElement('label');
+      hasAccRow.className = 'checkbox-row has-account-row';
+      var hasAccCheck = document.createElement('input');
+      hasAccCheck.type='checkbox'; hasAccCheck.checked = member.hasAccount;
+      hasAccCheck.addEventListener('change', function(){ member.hasAccount = hasAccCheck.checked; renderFamilySection(); render(); });
+      var hasAccSpan = document.createElement('span');
+      hasAccSpan.innerHTML = '자산·연금 계좌 계산 포함<span class="opt-desc">해제하면 이 구성원은 아래 예상 지출만 가구 계산에 반영됩니다(예: 자산이 없는 자녀).</span>';
+      hasAccRow.appendChild(hasAccCheck); hasAccRow.appendChild(hasAccSpan);
+      card.appendChild(hasAccRow);
+
+      // ---- member financial fields ----
+      if(member.hasAccount){
+        var grid = document.createElement('div');
+        grid.className = 'member-fields';
+
+        function mf(labelText, inputEl){
+          var wrap = document.createElement('div'); wrap.className='mf';
+          var lab = document.createElement('label'); lab.textContent = labelText;
+          wrap.appendChild(lab); wrap.appendChild(inputEl);
+          return wrap;
+        }
+        function numField(value, min, step, onChange){
+          var el = document.createElement('input');
+          el.type='number'; el.value=value; if(min!==null) el.min=min; el.step=step;
+          el.addEventListener('input', function(){ onChange(el.value); render(); });
+          return el;
+        }
+
+        grid.appendChild(mf('현재 자산(억원)', numField(member.asset, 0, 0.1, function(v){ member.asset = parseFloat(v)||0; })));
+        grid.appendChild(mf('월 적립액(만원)', numField(member.contrib, 0, 5, function(v){ member.contrib = parseFloat(v)||0; })));
+        grid.appendChild(mf('적립기간(년)', numField(member.accYears, 1, 1, function(v){ member.accYears = parseFloat(v)||1; })));
+        grid.appendChild(mf('적립 수익률(%)', numField(member.accRate, 0, 0.1, function(v){ member.accRate = parseFloat(v)||0; })));
+        grid.appendChild(mf('인출기간(년)', numField(member.withYears, 1, 1, function(v){ member.withYears = parseFloat(v)||1; })));
+        grid.appendChild(mf('인출 수익률(%)', numField(member.withRate, 0, 0.1, function(v){ member.withRate = parseFloat(v)||0; })));
+
+        var modeSel = document.createElement('select');
+        ['deplete','preserve'].forEach(function(v){
+          var o=document.createElement('option'); o.value=v; o.textContent = v==='deplete'?'완전 소진':'원금 보존';
+          if(member.mode===v) o.selected=true;
+          modeSel.appendChild(o);
+        });
+        modeSel.addEventListener('change', function(){ member.mode = modeSel.value; render(); });
+        grid.appendChild(mf('인출 방식', modeSel));
+
+        if(pensionMode==='individual'){
+          grid.appendChild(mf('국민연금(만원/월)', numField(member.pension, 0, 5, function(v){ member.pension = parseFloat(v)||0; })));
+        }
+        card.appendChild(grid);
+
+        var summaryLine = document.createElement('div');
+        summaryLine.className = 'member-summary-line';
+        summaryLine.id = 'memberSummary_'+member.id;
+        card.appendChild(summaryLine);
+      } else {
+        var note = document.createElement('div');
+        note.className = 'expense-only-note';
+        note.textContent = '이 구성원은 별도 자산·연금 계좌 없이, 아래 등록된 예상 지출만 가구 자산에서 차감됩니다.';
+        card.appendChild(note);
+      }
+
+      // ---- expenses ----
+      var expLabel = document.createElement('div');
+      expLabel.className = 'expenses-label';
+      expLabel.textContent = '예상 지출';
+      card.appendChild(expLabel);
+
+      member.expenses.forEach(function(exp){
+        var item = document.createElement('div');
+        item.className = 'expense-item';
+
+        var headRow = document.createElement('div');
+        headRow.className = 'expense-head-row';
+
+        var labelWrap = document.createElement('div'); labelWrap.className='ef label-f';
+        var labelLab = document.createElement('label'); labelLab.textContent='지출 항목';
+        var labelInput = document.createElement('input'); labelInput.type='text'; labelInput.value=exp.label; labelInput.placeholder='예: 대학 등록금, 노후 의료비';
+        labelInput.addEventListener('input', function(){ exp.label = labelInput.value; render(); });
+        labelWrap.appendChild(labelLab); labelWrap.appendChild(labelInput);
+
+        var catWrap = document.createElement('div'); catWrap.className='ef cat-f';
+        var catLab = document.createElement('label'); catLab.textContent='카테고리';
+        var catSel = document.createElement('select');
+        Object.keys(CATEGORY_META).forEach(function(k){
+          var o=document.createElement('option'); o.value=k; o.textContent = CATEGORY_META[k].emoji+' '+CATEGORY_META[k].label;
+          if(exp.category===k) o.selected=true;
+          catSel.appendChild(o);
+        });
+        catSel.addEventListener('change', function(){ exp.category = catSel.value; render(); });
+        catWrap.appendChild(catLab); catWrap.appendChild(catSel);
+
+        var removeExpBtn = document.createElement('button');
+        removeExpBtn.type='button'; removeExpBtn.className='remove-btn'; removeExpBtn.textContent='삭제';
+        removeExpBtn.addEventListener('click', function(){
+          member.expenses = member.expenses.filter(function(e){ return e.id !== exp.id; });
+          renderFamilySection(); render();
+        });
+
+        headRow.appendChild(labelWrap); headRow.appendChild(catWrap); headRow.appendChild(removeExpBtn);
+        item.appendChild(headRow);
+
+        var timingGrid = document.createElement('div');
+        timingGrid.className = 'expense-timing-grid';
+
+        function tf(labelText, inputEl){
+          var wrap=document.createElement('div'); wrap.className='ef';
+          var lab=document.createElement('label'); lab.textContent=labelText;
+          wrap.appendChild(lab); wrap.appendChild(inputEl);
+          return { wrap:wrap, lab:lab };
+        }
+
+        var modeSelStart = document.createElement('select');
+        [['year','지금부터(년)'],['age','나이 기준']].forEach(function(pair){
+          var o=document.createElement('option'); o.value=pair[0]; o.textContent=pair[1];
+          if(exp.startMode===pair[0]) o.selected=true;
+          modeSelStart.appendChild(o);
+        });
+
+        var startInput = document.createElement('input');
+        startInput.type='number'; startInput.step='1'; startInput.min='0'; startInput.value=exp.startValue;
+
+        var startField = tf(exp.startMode==='age' ? '시작 나이(세)' : '시작 시점(년 후)', startInput);
+
+        modeSelStart.addEventListener('change', function(){ exp.startMode = modeSelStart.value; refreshExpenseTimingUI(exp, startField.lab, startInput, durationInput); updatePreview(); render(); });
+        startInput.addEventListener('input', function(){ exp.startValue = startInput.value; updatePreview(); render(); });
+
+        var durationInput = document.createElement('input');
+        durationInput.type='number'; durationInput.min='1'; durationInput.step='1'; durationInput.value=exp.duration;
+        durationInput.addEventListener('input', function(){ exp.duration = durationInput.value; updatePreview(); render(); });
+
+        var freqSel = document.createElement('select');
+        [['lump','일시금'],['annual','매년'],['monthly','매월']].forEach(function(pair){
+          var o=document.createElement('option'); o.value=pair[0]; o.textContent=pair[1];
+          if(exp.frequency===pair[0]) o.selected=true;
+          freqSel.appendChild(o);
+        });
+        freqSel.addEventListener('change', function(){ exp.frequency = freqSel.value; refreshExpenseTimingUI(exp, startField.lab, startInput, durationInput); updatePreview(); render(); });
+
+        var amountInput = document.createElement('input');
+        amountInput.type='number'; amountInput.min='0'; amountInput.step='50'; amountInput.value=exp.amount;
+        amountInput.addEventListener('input', function(){ exp.amount = amountInput.value; updatePreview(); render(); });
+
+        var rateInput = document.createElement('input');
+        rateInput.type='number'; rateInput.min='-50'; rateInput.max='50'; rateInput.step='0.5'; rateInput.value=exp.rate;
+        rateInput.addEventListener('input', function(){ exp.rate = rateInput.value; updatePreview(); render(); });
+
+        timingGrid.appendChild(tf('시작 기준', modeSelStart).wrap);
+        timingGrid.appendChild(startField.wrap);
+        timingGrid.appendChild(tf('기간(년)', durationInput).wrap);
+        timingGrid.appendChild(tf('빈도', freqSel).wrap);
+        timingGrid.appendChild(tf('금액(만원, 오늘기준)', amountInput).wrap);
+        timingGrid.appendChild(tf('연 증감률(%)', rateInput).wrap);
+        item.appendChild(timingGrid);
+
+        var preview = document.createElement('div');
+        preview.className = 'expense-preview';
+        function updatePreview(){
+          var startYear = expenseStartYear(exp, member);
+          var baseAmt = (parseFloat(exp.amount)||0)*1e4;
+          var rate = parseFloat(exp.rate)||0;
+          var firstAmt = baseAmt*Math.pow(1+rate/100, startYear);
+          var freqTxt = FREQ_LABEL[exp.frequency];
+          var txt = '→ 지금부터 ' + startYear.toFixed(1) + '년 후 시작(' + freqTxt + ')';
+          if(exp.frequency!=='lump'){ txt += ', ' + (parseFloat(exp.duration)||1) + '년간'; }
+          txt += ' · 첫 회 예상 금액 약 ' + fmtWon(firstAmt) + ' (오늘 기준 ' + fmtManwon(baseAmt) + ')';
+          preview.textContent = txt;
+        }
+        refreshExpenseTimingUI(exp, startField.lab, startInput, durationInput);
+        updatePreview();
+        item.appendChild(preview);
+
+        card.appendChild(item);
+      });
+
+      var addExpBtn = document.createElement('button');
+      addExpBtn.type='button'; addExpBtn.className='add-expense-btn';
+      addExpBtn.textContent = '+ 지출 항목 추가 (' + member.expenses.length + '/5)';
+      addExpBtn.disabled = member.expenses.length >= 5;
+      addExpBtn.addEventListener('click', function(){
+        if(member.expenses.length >= 5) return;
+        member.expenses.push(newExpense());
+        renderFamilySection(); render();
+      });
+      card.appendChild(addExpBtn);
+
+      container.appendChild(card);
+    });
+
+    var addFamilyBtn = $('addFamilyBtn');
+    addFamilyBtn.disabled = familyMembers.length >= 8;
+    addFamilyBtn.textContent = '+ 가족 구성원 추가 (' + familyMembers.length + '/8)';
+  }
+
+  // =========================================================================
   // ---- main render ----
+  // =========================================================================
+  function globalOpts(){
+    return {
+      inflation: num('inflationNum'),
+      cola: $('colaCheck').checked,
+      pensionMode: pensionModeValue(),
+      combinedAmount: $('combinedAmountNum').value,
+      combinedStartYear: $('combinedStartNum').value,
+      livingExpense: $('livingExpenseNum').value,
+      livingRate: $('livingRateNum').value
+    };
+  }
+
   function render(){
-    var asset = num('assetNum')*1e8;
-    var contrib = num('contribNum')*1e4;
-    var accYears = Math.max(1, Math.round(num('accYearsNum')));
-    var accRate = num('accRateNum');
-    var withYears = Math.max(1, Math.round(num('withYearsNum')));
-    var withRate = num('withRateNum');
-    var mode = document.querySelector('input[name="mode"]:checked').value;
-    var pension = num('pensionNum')*1e4;
-    var cola = $('colaCheck').checked;
-    var inflation = num('inflationNum');
+    updateCombinedPensionVisibility();
+    var opts = globalOpts();
+    var res = computeHousehold(familyMembers, opts, 0);
 
-    var series = buildSeries(asset, contrib, accYears, accRate, withYears, withRate, mode);
-    var fv = series.fv, pmt = series.pmt;
+    // ---- per-member summary lines + summary table ----
+    var msBody = $('memberSummaryBody'); msBody.innerHTML='';
+    res.mseries.forEach(function(x){
+      var m = x.member;
+      if(m.hasAccount){
+        var el = $('memberSummary_'+m.id);
+        if(el){
+          el.innerHTML = '은퇴(적립 종료) 시점 자산 약 <strong>'+fmtEok(x.s.fv)+'</strong> · 월 인출 가능액 약 <strong>'+fmtManwon(x.s.pmt)+'</strong>';
+        }
+      }
+      var tr = document.createElement('tr');
+      var kind = m.hasAccount ? '계좌 포함' : '지출만 반영';
+      var retireCell = m.hasAccount ? (x.mm.accYears+'년 후') : '–';
+      var fvCell = m.hasAccount ? fmtWon(x.s.fv) : '–';
+      var pmtCell = m.hasAccount ? fmtWon(x.s.pmt)+'/월' : '–';
+      var pensionCell = opts.pensionMode==='individual' ? (m.pension>0 ? fmtManwon((parseFloat(m.pension)||0)*1e4)+'/월' : '–') : '통합 입력';
+      tr.innerHTML = '<td>'+m.name+'</td><td>'+kind+'</td><td>'+retireCell+'</td><td>'+fvCell+'</td><td>'+pmtCell+'</td><td>'+pensionCell+'</td>';
+      msBody.appendChild(tr);
+    });
 
-    $('tileFV').textContent = fmtWon(fv);
-    $('tileFVsub').textContent = '약 '+fmtEok(fv)+' · 원금 성장 '+fmtEok(accumulate(asset,0,accYears,accRate).total)+' + 적립분 '+fmtEok(fv-accumulate(asset,0,accYears,accRate).total);
-    $('tilePMT').textContent = fmtWon(pmt)+'/월';
-    $('tilePMTsub').textContent = mode==='preserve' ? '이자만 인출 · 원금 유지' : withYears+'년간 인출 후 잔액 0';
+    // ---- depletion warning ----
+    var depWarn = $('depletionWarning');
+    if(res.depletedAtMonth !== null){
+      var depYear = res.depletedAtMonth/12;
+      $('depletionWarningText').textContent = '등록된 가족 지출을 반영하면, 지금부터 약 '+depYear.toFixed(1)+'년 시점(전체 계획 '+res.maxYears+'년 중)에 가구 자산이 먼저 소진될 수 있습니다. 지출 금액·시점을 조정하거나 인출 수익률·기간을 다시 검토해 보세요.';
+      depWarn.style.display = 'flex';
+    } else {
+      depWarn.style.display = 'none';
+    }
 
-    var totalStart = pmt+pension;
+    // ---- tiles (as of the point every account-holding member has retired) ----
+    var refYears = res.refMonth/12;
+    $('tileFV').textContent = fmtWon(res.bal[res.refMonth]);
+    $('tileFVsub').textContent = '가구 전원 은퇴 완료 시점(지금부터 '+refYears.toFixed(1)+'년 후) 기준, 약 '+fmtEok(res.bal[res.refMonth]);
+    $('tilePMT').textContent = fmtWon(res.pmtAtRef)+'/월';
+    $('tilePMTsub').textContent = '가구 전원 은퇴 완료 시점 기준';
+
+    var totalStart = res.pmtAtRef + res.pensionArr[res.refMonth];
     $('tileTotal').textContent = fmtWon(totalStart)+'/월';
-    $('tileTotalSub').textContent = '포트폴리오 '+fmtManwon(pmt)+' + 국민연금 '+fmtManwon(pension);
+    $('tileTotalSub').textContent = '포트폴리오 '+fmtManwon(res.pmtAtRef)+' + 국민연금 '+fmtManwon(res.pensionArr[res.refMonth]);
 
-    var discStart = Math.pow(1+inflation/100, accYears);
+    var discStart = Math.pow(1+opts.inflation/100, refYears);
     var realTotalStart = totalStart/discStart;
     $('tileReal').textContent = fmtWon(realTotalStart)+'/월';
     $('tileRealSub').textContent = '오늘 물가 기준 구매력';
 
-    // purchasing power table
-    var pensionEndNominal = cola ? pension*Math.pow(1+inflation/100, withYears) : pension;
-    var discEnd = Math.pow(1+inflation/100, accYears+withYears);
+    // ---- purchasing power table ----
+    var pensionAtEnd = res.pensionArr[res.maxN];
+    var discEnd = Math.pow(1+opts.inflation/100, res.maxYears);
     var rows = [
-      { name:'포트폴리오 인출', nomStart: pmt, nomEnd: pmt, realStart: pmt/discStart, realEnd: pmt/discEnd },
-      { name:'국민연금', nomStart: pension, nomEnd: pensionEndNominal, realStart: pension/discStart, realEnd: pensionEndNominal/discEnd }
+      { name:'포트폴리오 인출', nomStart: res.pmtAtRef, nomEnd: res.pmtAtEnd, realStart: res.pmtAtRef/discStart, realEnd: res.pmtAtEnd/discEnd },
+      { name:'국민연금', nomStart: res.pensionArr[res.refMonth], nomEnd: pensionAtEnd, realStart: res.pensionArr[res.refMonth]/discStart, realEnd: pensionAtEnd/discEnd }
     ];
-    var totalRow = {
-      name:'합계', nomStart: rows[0].nomStart+rows[1].nomStart, nomEnd: rows[0].nomEnd+rows[1].nomEnd,
-      realStart: rows[0].realStart+rows[1].realStart, realEnd: rows[0].realEnd+rows[1].realEnd
-    };
+    var totalRow = { name:'합계', nomStart: rows[0].nomStart+rows[1].nomStart, nomEnd: rows[0].nomEnd+rows[1].nomEnd, realStart: rows[0].realStart+rows[1].realStart, realEnd: rows[0].realEnd+rows[1].realEnd };
     var ptbody = $('powerTableBody'); ptbody.innerHTML='';
     rows.concat([totalRow]).forEach(function(r,i){
       var tr = document.createElement('tr');
@@ -622,27 +1256,88 @@
       ptbody.appendChild(tr);
     });
 
-    // sensitivity
+    // ---- sensitivity ----
     var sbody = $('sensitivityBody'); sbody.innerHTML='';
     [-2,0,2].forEach(function(delta){
-      var ar = Math.max(0, accRate+delta), wr = Math.max(0, withRate+delta);
-      var s = buildSeries(asset, contrib, accYears, ar, withYears, wr, mode);
+      var r = computeHousehold(familyMembers, opts, delta);
       var tr = document.createElement('tr');
       if(delta===0) tr.className='base';
-      var label = delta===0 ? '기준(현재 설정)' : (delta>0?'+':'')+delta+'%p';
-      tr.innerHTML = '<td>'+label+'</td><td>'+ar.toFixed(1)+'%</td><td>'+wr.toFixed(1)+'%</td><td>'+fmtWon(s.fv)+'</td><td>'+fmtWon(s.pmt)+'/월</td>';
+      var label = delta===0 ? '기준(현재 설정)' : (delta>0?'+':'')+delta+'%p (전 구성원)';
+      var totalAtRef = r.pmtAtRef + r.pensionArr[r.refMonth];
+      tr.innerHTML = '<td>'+label+'</td><td>'+fmtWon(r.bal[r.refMonth])+'</td><td>'+fmtWon(r.pmtAtRef)+'/월</td><td>'+fmtWon(totalAtRef)+'/월</td>';
       sbody.appendChild(tr);
     });
 
-    drawChart(series, accYears, withYears);
+    // ---- evaluation: household income vs registered expenses, per year ----
+    // Years before firstIncomeMonth have no modeled household income (no
+    // pension/withdrawal has started yet) — any expenses there are assumed
+    // funded by salary/current income, so they're shown for reference but
+    // never flagged as a "deficit" (that would compare against an income
+    // this tool never claimed to model).
+    var evalBody = $('evalTableBody'); evalBody.innerHTML='';
+    var totalIncomeAll=0, totalExpenseAll=0, deficitYears=0, worstYear=null, worstDeficit=0;
+    for(var y=0;y<=res.maxYears;y++){
+      var month = Math.min(y*12, res.maxN);
+      var hasIncome = res.firstIncomeMonth!==null && month>=res.firstIncomeMonth;
+      var income = res.incomeByMonth[month]*12;
+      var expense = res.expenseByYearTotal[y]||0;
+      var net = income-expense;
+      totalIncomeAll += income; totalExpenseAll += expense;
+      var badge;
+      if(!hasIncome){
+        badge = '<span class="badge badge-neutral">적립기간</span>';
+      } else {
+        if(net<0){ deficitYears++; if(net<worstDeficit){ worstDeficit=net; worstYear=y; } }
+        badge = expense===0 ? '' : (net>=0 ? '<span class="badge badge-good">여유</span>' : '<span class="badge badge-critical">부족</span>');
+      }
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+y+'년</td><td>'+fmtWon(income)+'</td><td>'+fmtWon(expense)+'</td><td>'+(net>=0?'+':'')+fmtWon(net)+'</td><td>'+badge+'</td>';
+      evalBody.appendChild(tr);
+    }
+    var totalRegisteredExpense = res.events.reduce(function(a,e){ return a+e.amount; }, 0);
+    var coverage = totalRegisteredExpense>0 ? (totalIncomeAll/Math.max(totalIncomeAll, totalRegisteredExpense)*100) : 100;
+    var evalSummary = $('evalSummary');
+    evalSummary.innerHTML =
+      '<div class="eval-tile"><div class="label">등록된 가족 지출 합계(미래가치)</div><div class="value">'+fmtWon(totalRegisteredExpense)+'</div></div>' +
+      '<div class="eval-tile"><div class="label">지출이 소득을 초과하는 해</div><div class="value">'+deficitYears+'개 연도</div></div>' +
+      '<div class="eval-tile"><div class="label">가장 큰 부담 연도</div><div class="value">'+(worstYear!==null ? worstYear+'년 후 (약 '+fmtWon(Math.abs(worstDeficit))+' 부족)' : '해당 없음')+'</div></div>';
+
+    drawChart(res);
   }
 
+  // =========================================================================
   // ---- wire up ----
-  ['asset','contrib','accYears','accRate','withYears','withRate','pension','inflation'].forEach(function(base){
-    bindPair(base+'Range', base+'Num', render);
-  });
-  document.querySelectorAll('input[name="mode"]').forEach(function(r){ r.addEventListener('change', render); });
+  // =========================================================================
+  bindPair('inflationRange','inflationNum', render);
+  document.querySelectorAll('input[name="pensionMode"]').forEach(function(r){ r.addEventListener('change', function(){ renderFamilySection(); render(); }); });
   $('colaCheck').addEventListener('change', render);
+  $('combinedAmountNum').addEventListener('input', render);
+  $('combinedStartNum').addEventListener('input', render);
+  $('livingExpenseNum').addEventListener('input', render);
+  $('livingRateNum').addEventListener('input', render);
+
+  $('addFamilyBtn').addEventListener('click', function(){
+    if(familyMembers.length >= 8) return;
+    familyMembers.push(newMember());
+    renderFamilySection(); render();
+  });
+
+  renderFamilySection();
+
+  // ---- reset to example defaults ----
+  var DEFAULTS = { inflation:'2.5', pensionMode:'individual', cola:true, combinedAmount:'140', combinedStart:'10', livingExpense:'250', livingRate:'2.5' };
+  $('resetBtn').addEventListener('click', function(){
+    $('inflationNum').value = DEFAULTS.inflation; $('inflationRange').value = DEFAULTS.inflation;
+    document.querySelector('input[name="pensionMode"][value="'+DEFAULTS.pensionMode+'"]').checked = true;
+    $('colaCheck').checked = DEFAULTS.cola;
+    $('combinedAmountNum').value = DEFAULTS.combinedAmount;
+    $('combinedStartNum').value = DEFAULTS.combinedStart;
+    $('livingExpenseNum').value = DEFAULTS.livingExpense;
+    $('livingRateNum').value = DEFAULTS.livingRate;
+    familyMembers = defaultMembers();
+    renderFamilySection();
+    render();
+  });
 
   $('yearTableToggle').addEventListener('click', function(){
     var wrap = $('yearTableWrap');
@@ -656,7 +1351,9 @@
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
   }
 
+  // =========================================================================
   // ---- print & save (PDF / JPG) ----
+  // =========================================================================
   var statusEl = $('exportStatus');
   var statusTimer = null;
   function setStatus(msg){
